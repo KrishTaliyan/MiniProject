@@ -34,6 +34,7 @@ function displayProducts(products) {
   });
 }
 
+
 function getSearchHistory() {
   return JSON.parse(localStorage.getItem("searchHistory")) || [];
 }
@@ -41,8 +42,11 @@ function getSearchHistory() {
 function saveSearch(term) {
   let history = getSearchHistory();
 
-  if (!history.includes(term)) {
-    history.push(term);
+  if (!history.some(item => item.term === term)) {
+    history.push({
+      term: term,
+      time: new Date().toLocaleString()
+    });
     localStorage.setItem("searchHistory", JSON.stringify(history));
   }
 }
@@ -53,8 +57,8 @@ function searchProduct() {
 
   saveSearch(value);
 
-  const filtered = allProducts.filter((product) =>
-    product.title.toLowerCase().includes(value),
+  const filtered = allProducts.filter(product =>
+    product.title.toLowerCase().includes(value)
   );
 
   displayProducts(filtered);
@@ -68,14 +72,16 @@ function showSuggestions(input) {
   suggestionsBox.innerHTML = "";
   if (!input) return;
 
-  const filtered = history.filter((item) => item.includes(input));
+  const filtered = history.filter(item =>
+    item.term.toLowerCase().includes(input)
+  );
 
-  filtered.forEach((item) => {
+  filtered.forEach(item => {
     const div = document.createElement("div");
-    div.innerText = item;
+    div.innerText = item.term;
 
     div.onclick = () => {
-      document.getElementById("searchInput").value = item;
+      document.getElementById("searchInput").value = item.term;
       searchProduct();
       suggestionsBox.innerHTML = "";
     };
@@ -88,6 +94,31 @@ document.getElementById("searchInput").addEventListener("input", (e) => {
   showSuggestions(e.target.value.toLowerCase());
 });
 
+document.getElementById("historyBtn").addEventListener("click", () => {
+  const historyBox = document.getElementById("historyBox");
+  const history = getSearchHistory();
+
+  historyBox.innerHTML = "";
+
+  if (history.length === 0) {
+    historyBox.innerHTML = "<p>No search history</p>";
+    return;
+  }
+
+  history.forEach(item => {
+    const div = document.createElement("div");
+    div.innerHTML = `<b>${item.term}</b> <small>(${item.time})</small>`;
+    historyBox.appendChild(div);
+  });
+});
+
+document.getElementById("clearHistoryBtn").addEventListener("click", () => {
+  localStorage.removeItem("searchHistory");
+  document.getElementById("historyBox").innerHTML = "<p>History cleared</p>";
+  document.getElementById("suggestions").innerHTML = "";
+});
+
+
 document.getElementById("bagbutton").addEventListener("click", () => {
   alert("Item added to bag");
 });
@@ -95,4 +126,3 @@ document.getElementById("bagbutton").addEventListener("click", () => {
 document.getElementById("wishlistbutton").addEventListener("click", () => {
   alert("Item added to wishlist");
 });
-
