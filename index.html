@@ -1,35 +1,31 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Product Store</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1>Product Store</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Store</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
-    <button id="bagbutton">Add to Bag</button>
-    <button id="wishlistbutton">Wishlist</button>
+  <h1>Product Store</h1>
 
-    <div class="search-box">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search Your Product Here"
-      />
-      <button onclick="searchProduct()">Search</button>
+  <button id="bagbutton">Add to Bag</button>
+  <button id="wishlistbutton">Wishlist</button>
+  <button onclick="goToViewHistory()">View History</button>
 
-      
-      <div id="suggestions" class="suggestions"></div>
-    </div>
-    <button id="historyBtn">Show Search History</button>
-    <div id="historyBox"></div>
-    <button id="clearHistoryBtn">Clear Search History</button>
+  <div class="search-box">
+    <input id="searchInput" placeholder="Search Your Product Here" />
+    <button onclick="searchProduct()">Search</button>
+    <div id="suggestions" class="suggestions"></div>
+  </div>
 
+  <button id="historyBtn">Show Search History</button>
+  <button id="clearHistoryBtn">Clear Search History</button>
+  <div id="historyBox"></div>
 
-    <div class="product-container" id="products"></div>
+  <div class="product-container" id="products"></div>
 
-    <script src="app.js"></script>
-  </body>
+  <script src="app.js"></script>
+</body>
 </html>
