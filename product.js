@@ -13,12 +13,13 @@ fetch(`https://dummyjson.com/products/${id}`)
         <h3>₹ ${product.price}</h3>
         <p><b>Brand:</b> ${product.brand}</p>
         <p><b>Category:</b> ${product.category}</p>
-        <p><b>Rating:</b> ⭐ ${product.rating}</p>
+        <p><b>Rating:</b>  ${product.rating}</p>
       </div>
     `;
 
     saveViewHistory(product);
-  });
+    
+    });
 
 
 function saveViewHistory(product) {
@@ -30,6 +31,10 @@ function saveViewHistory(product) {
       title: product.title,
       price: product.price
     });
+
+    if(history.length > 5){
+        history.shift();
+    }
 
     localStorage.setItem("viewHistory", JSON.stringify(history));
   }

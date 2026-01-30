@@ -1,16 +1,35 @@
 let allProducts = [];
+let filteredProducts = []; 
+let currentPage = 1;
+const itemsPerPage = 8;
 
-/* FETCH PRODUCTS */
+
 fetch("https://dummyjson.com/products")
   .then(res => res.json())
   .then(data => {
     allProducts = data.products;
-    displayProducts(allProducts);
+    filteredProducts = allProducts;
+    renderPage();
   });
+
+function renderPage() {
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+
+  const pageProducts = filteredProducts.slice(start, end);
+  displayProducts(pageProducts);
+
+  updatePagination();
+}
 
 function displayProducts(products) {
   const container = document.getElementById("products");
   container.innerHTML = "";
+
+  if (products.length === 0) {
+    container.innerHTML = "<h3>No products found</h3>";
+    return;
+  }
 
   products.forEach(product => {
     const card = document.createElement("div");
@@ -30,59 +49,42 @@ function displayProducts(products) {
   });
 }
 
-/* SEARCH HISTORY */
-function getSearchHistory() {
-  return JSON.parse(localStorage.getItem("searchHistory")) || [];
+function updatePagination() {
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  document.getElementById("pageInfo").innerText =
+    `Page ${currentPage} of ${totalPages}`;
+
+  document.getElementById("prevBtn").disabled = currentPage === 1;
+  document.getElementById("nextBtn").disabled = currentPage === totalPages;
 }
 
-function saveSearch(term) {
-  let history = getSearchHistory();
-  if (!history.some(item => item.term === term)) {
-    history.push({ term, time: new Date().toLocaleString() });
-    localStorage.setItem("searchHistory", JSON.stringify(history));
+document.getElementById("prevBtn").onclick = () => {
+  if (currentPage > 1) {
+    currentPage--;
+    renderPage();
   }
-}
+};
+
+document.getElementById("nextBtn").onclick = () => {
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  if (currentPage < totalPages) {
+    currentPage++;
+    renderPage();
+  }
+};
+
 
 function searchProduct() {
-  const value = searchInput.value.toLowerCase();
-  if (!value) return;
+  const value = document.getElementById("searchInput").value.toLowerCase();
 
-  saveSearch(value);
-  const filtered = allProducts.filter(p =>
+  filteredProducts = allProducts.filter(p =>
     p.title.toLowerCase().includes(value)
   );
-  displayProducts(filtered);
-  showSuggestions(value);
+
+  currentPage = 1; 
+  renderPage();
 }
-
-function showSuggestions(input) {
-  const box = document.getElementById("suggestions");
-  box.innerHTML = "";
-  getSearchHistory()
-    .filter(item => item.term.includes(input))
-    .forEach(item => {
-      const div = document.createElement("div");
-      div.innerText = item.term;
-      div.onclick = () => {
-        searchInput.value = item.term;
-        searchProduct();
-        box.innerHTML = "";
-      };
-      box.appendChild(div);
-    });
-}
-
-document.getElementById("historyBtn").onclick = () => {
-  historyBox.innerHTML = "";
-  getSearchHistory().forEach(item => {
-    historyBox.innerHTML += `<div>${item.term} (${item.time})</div>`;
-  });
-};
-
-document.getElementById("clearHistoryBtn").onclick = () => {
-  localStorage.removeItem("searchHistory");
-  historyBox.innerHTML = "History cleared";
-};
 
 function goToViewHistory() {
   window.location.href = "view-history.html";
